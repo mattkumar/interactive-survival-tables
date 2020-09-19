@@ -1,6 +1,6 @@
 ###Author : Matt
 ###Date   : 2020-09-19
-###Purpose: This script will pre-compute the data sets necessary for the shiny app. The data sets are then sourced into the shiny app.
+###Purpose: This script will pre-compute the data sets necessary for the shiny app. 
 
 #Load libs
 library(tidyverse)
@@ -14,7 +14,7 @@ library(sparkline)
 #Load the burn data set
 data(burn)
 
-#Clean the data set up a bit: Recode (based on documentation), Keep only what I need
+#Clean the data set up a bit: Recode (based on documentation), keep only what I need
 burn_1m <-  burn %>%
               mutate(ID        = Obs,
                      Treatment = if_else(Z1 == 1, "Body Cleansing", "Routine Bath"),
@@ -30,10 +30,10 @@ burn_1m <-  burn %>%
               select(-c(starts_with("Z"), T1:T3, D1:D3))
 
 
-#Create Sparklines for the entire data set using the Time variable.
-#Essentially uncount each ID's time into a vector of one's (so the sparkline will be a constant line of length Time)
-#e.g. if my time is 5, i'll have 1,1,1,1,1 as my sparkline data
-#This is a bit expensive, so I prefer to do it in advance for all ID's and save the result as a data source.
+#Create an inline 'swimmer' or 'event' plot using the Time + Censor variables via the sparkline package.
+#Essentially uncount each ID's Time into a vector of one's (so the sparkline will be a constant line of length Time)
+#Then using the Censor variable,color the end points of the sparkline based on whether they had the event or not.
+#This is a bit expensive, so I do it in advance for all ID's and save the result as a data source.
 burn_1 <- burn_1m %>%
             select(ID, Time, Censor) %>%
             uncount(Time) %>%
@@ -65,7 +65,7 @@ sfit <- survfit(Surv(Time, Censor) ~ Treatment, data = burn_1)
 time_vector <- seq(0,50,10)
 
 #For each ID, construct a series of indicators that record whether they are:
-# at risk for a given time
+# at risk of the event for a given time
 # had an event at the given time
 #This can also be potentially expensive, so again I compute it here in advance and save the resulting data.
 for(i in seq_along(time_vector)) {
