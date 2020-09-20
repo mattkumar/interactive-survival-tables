@@ -29,16 +29,6 @@ burn_1m <-  burn %>%
                      Time      = T1) %>%
               select(-c(starts_with("Z"), T1:T3, D1:D3))
 
-spk_tool <- function(labels) {
-  htmlwidgets::JS(
-    sprintf(
-      "function(sparkline, options, field){
-  return %s[field[0].offset];
-}",
-      jsonlite::toJSON(labels)
-    )
-  )
-}
   
 #Create an inline 'swimmer' or 'event' plot using the Time + Censor variables via the sparkline package!
 #General Approach: `uncount`` each ID's Time into a vector of one's (so the sparkline will be a constant line of length Time)
