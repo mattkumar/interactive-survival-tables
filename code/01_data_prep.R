@@ -40,11 +40,11 @@ spk_tool <- function(labels) {
   )
 }
   
-#Create an inline 'swimmer' or 'event' plot using the Time + Censor variables via the sparkline package.
-#Approach: `uncount`` each ID's Time into a vector of one's (so the sparkline will be a constant line of length Time)
+#Create an inline 'swimmer' or 'event' plot using the Time + Censor variables via the sparkline package!
+#General Approach: `uncount`` each ID's Time into a vector of one's (so the sparkline will be a constant line of length Time)
 #Then using the Censor variable, color the end points of the sparkline based on whether they had the event or not.
 #Lastly, create a custom tool tip that displays the actual Time and event status, so that we can drop those variables.
-#This is a bit expensive, so I do it in advance for all ID's and save the result as a data source.
+#This approach is a bit `expensive`, so I do it in advance for all ID's and save the result as a data source.
 
 #Custom spark labeller -  https://github.com/htmlwidgets/sparkline/issues/14
 spk_tool <- function(labels) {

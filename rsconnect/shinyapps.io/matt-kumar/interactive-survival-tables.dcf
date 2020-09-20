@@ -1,0 +1,12 @@
+name: interactive-survival-tables
+title: interactive-survival-tables
+username:
+account: matt-kumar
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2844861
+bundleId: 3647038
+url: https://matt-kumar.shinyapps.io/interactive-survival-tables/
+when: 1600533933.32589
+asMultiple: FALSE
+asStatic: FALSE

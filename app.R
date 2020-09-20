@@ -144,6 +144,7 @@ output$drill_tab <- renderDataTable(DT::datatable(drill_data(),
                                                     filter = 'top',
                                                     options = list(pageLength = 10,
                                                                    lengthChange = FALSE,
+                                                                   #The fnDrawCallback logic borrowed - https://stackoverflow.com/questions/45179410/add-label-to-sparkline-plot-in-datatable
                                                                    fnDrawCallback = htmlwidgets::JS('function(){HTMLWidgets.staticRender();}'),
                                                                    columnDefs = list(list(className = 'dt-center', targets = '_all'))))
                                                    %>% 
