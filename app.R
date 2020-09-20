@@ -10,7 +10,7 @@ load(here::here('data', 'pre_computed_data.Rdata'))
 
 #define ui
 ui    <- fluidPage( 
-                    theme = shinytheme("cerulean"),
+                    theme = shinytheme("flatly"),
                     
                     titlePanel("Survival Tables"),
                     
@@ -22,6 +22,7 @@ ui    <- fluidPage(
                       ),
                       column(5,
                              h3(textOutput("plot_title")),
+                             br(),
                              plotOutput('km', height="470", width="675"),
                              h6(textOutput("header")),
                              DT::dataTableOutput('summary_tab', width="700")
@@ -85,7 +86,7 @@ server <- function(input, output) {
                                       )
 
 
-#Subset the original data frame (e.g. burn_1) to create the drill down data (e.g. drill_data()), based on user selection in output$summary_tab
+#Subset the original patient level data (e.g. burn_1) to create the drill down data (e.g. drill_data()), based on user selection in output$summary_tab
 drill_data <- reactive({
                         #Require selection by user before doing anything
                         req(input$summary_tab_cells_selected)
@@ -101,7 +102,7 @@ drill_data <- reactive({
                         
                         #Remove variables not used, based on what was selected.
                         #Keeping them in interfere with the position coordinates in the next chunk.
-                        #e.g. removing the unused ones lets us use the same selection logic on line 105
+                        #e.g. removing the unused ones lets us use the same selection logic on line 120
                         if(input$option==1) {
                             drill_filtered <- burn_1 %>%
                                                 select(-starts_with("event_"))
@@ -120,6 +121,7 @@ drill_data <- reactive({
                                           
                                           #Filter the last variable (i.e. the indicator) to be equal to 1
                                           filter(eval(parse(text=colnames(.)[ncol(.)])) == 1) 
+                        
                         
                         #Final filtering on rows
                         if(row_coord == 1) {

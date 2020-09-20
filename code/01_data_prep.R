@@ -29,13 +29,39 @@ burn_1m <-  burn %>%
                      Time      = T1) %>%
               select(-c(starts_with("Z"), T1:T3, D1:D3))
 
-
+spk_tool <- function(labels) {
+  htmlwidgets::JS(
+    sprintf(
+      "function(sparkline, options, field){
+  return %s[field[0].offset];
+}",
+      jsonlite::toJSON(labels)
+    )
+  )
+}
+  
 #Create an inline 'swimmer' or 'event' plot using the Time + Censor variables via the sparkline package.
-#Essentially uncount each ID's Time into a vector of one's (so the sparkline will be a constant line of length Time)
-#Then using the Censor variable,color the end points of the sparkline based on whether they had the event or not.
+#Approach: `uncount`` each ID's Time into a vector of one's (so the sparkline will be a constant line of length Time)
+#Then using the Censor variable, color the end points of the sparkline based on whether they had the event or not.
+#Lastly, create a custom tool tip that displays the actual Time and event status, so that we can drop those variables.
 #This is a bit expensive, so I do it in advance for all ID's and save the result as a data source.
+
+#Custom spark labeller -  https://github.com/htmlwidgets/sparkline/issues/14
+spk_tool <- function(labels) {
+  htmlwidgets::JS(
+    sprintf(
+      "function(sparkline, options, field){
+      return %s[[field.x]];
+}",
+      jsonlite::toJSON(labels)
+    )
+  )
+}
+
+#Sparkline creation + data prep pipe
 burn_1 <- burn_1m %>%
             select(ID, Time, Censor) %>%
+            mutate(label = if_else(Censor == 1, paste(Time, "Days - Event"), paste(Time, "Days - No Event"))) %>%
             uncount(Time) %>%
             mutate(value = 1) %>%
             group_by(ID) %>%
@@ -46,9 +72,11 @@ burn_1 <- burn_1m %>%
                                           lineColor = "grey", 
                                           lineWidth = 13, 
                                           spotColor = "blue", 
-                                          spotRadius = 5, 
+                                          spotRadius = 5,
                                           chartRangeMinX = 0, 
-                                          chartRangeMaxX = 50)) %>%
+                                          chartRangeMaxX = 50,
+                                          tooltipFormatter = spk_tool(label)
+                                          )) %>%
             #Join back (by ID) to get rest of variables
             left_join(burn_1m) %>%
             #The default color is set to blue. Using the censor variable, re-color them
